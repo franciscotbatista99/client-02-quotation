@@ -1,0 +1,3 @@
+# Customer fixtures must stay byte-identical (sha256 provenance check):
+# no line-ending conversion on Windows checkouts (core.autocrlf).
+fixtures/*.json -text
