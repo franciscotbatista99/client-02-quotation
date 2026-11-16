@@ -2,7 +2,7 @@
 
 Quotation calculator for **HansePack Handelsgesellschaft**, a fictional B2B packaging supplier (HAW Hamburg course project, customer project 02, Sessions 6–8). Not a real offer: *Net amounts – course project, not a binding quotation.*
 
-This is a separate product repository. It is developed through the team's existing Factory ([`cait33/agentic_ai`](https://github.com/cait33/agentic_ai), project config `projects/hansepack-02.json`) but **runs and is tested without the Factory, an LLM, a network or a database**.
+This is a separate product repository. It is developed through the team's existing Factory ([`cait33/agentic_ai`](https://github.com/cait33/agentic_ai), project config `projects/quotation-02.json`) but **runs and is tested without the Factory, an LLM, a network or a database**.
 
 Previous customer (Nordwerk website) is a different product: [`client-01-website`](https://github.com/franciscotbatista99/client-01-website), frozen at tag `v1.0` (`f1575ad`).
 
@@ -14,7 +14,7 @@ Previous customer (Nordwerk website) is a different product: [`client-01-website
 | S7 (23.11.) | All Q01–Q14 and E01–E10, simple web UI, JSON export, fresh-checkout release candidate | planned |
 | S8 (30.11.) | Change request CR-02 (shipping rule HP-V2), release and handover | planned |
 
-Customer issue with scope, open questions and assumptions: issue #N.
+Customer issue with scope, open questions and assumptions: issue #2.
 
 ## Requirements
 
