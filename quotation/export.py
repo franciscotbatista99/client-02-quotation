@@ -3,17 +3,6 @@ from __future__ import annotations
 import json
 from typing import Any
 
-"""Export a quotation as JSON text.
-
-This function takes a validated quote dictionary and returns a JSON string
-with the exact structure defined in the interface specification.
-
-The output matches the visible calculation exactly, using integer cents for all
-monetary values.
-
-Note: This function does not recalculate any values; it copies the input quote
-unchanged.
-"""
 
 def quote_to_json(quote: dict[str, Any]) -> str:
     return json.dumps({
@@ -33,5 +22,6 @@ def quote_to_json(quote: dict[str, Any]) -> str:
         ],
         'goods_net_cents': quote['goods_net_cents'],
         'shipping_cents': quote['shipping_cents'],
-        'total_cents': quote['total_cents']
+        'total_cents': quote['total_cents'],
+        'calculation_note': 'Net amounts; shipping shown separately.'
     }, ensure_ascii=False, indent=2)
