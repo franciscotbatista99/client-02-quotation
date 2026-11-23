@@ -10,8 +10,8 @@ Previous customer (Nordwerk website) is a different product: [`client-01-website
 
 | Session | Scope | State |
 |---|---|---|
-| S6 (16.11.) | Repo, customer fixtures, Python calculation for HP-BOX × 1 / × 50, reject quantity 0 (HP-AC01 initial, HP-AC02, HP-AC04 E01) | in progress |
-| S7 (23.11.) | All Q01–Q14 and E01–E10, simple web UI, JSON export, fresh-checkout release candidate | planned |
+| S6 (16.11.) | Repo, customer fixtures, Python calculation for HP-BOX × 1 / × 50, reject quantity 0 (HP-AC01 initial, HP-AC02, HP-AC04 E01) | done |
+| S7 (23.11.) | All Q01–Q14 and E01–E10, simple web UI, JSON export, fresh-checkout release candidate | in progress |
 | S8 (30.11.) | Change request CR-02 (shipping rule HP-V2), release and handover | planned |
 
 Customer issue with scope, open questions and assumptions: issue #2.
@@ -19,7 +19,8 @@ Customer issue with scope, open questions and assumptions: issue #2.
 ## Requirements
 
 - Python 3.12
-- `pytest` for the product checks (no runtime dependencies – standard library only)
+- No runtime dependencies – calculation, export and web UI use the standard library only
+- `pytest` for the product checks
 
 ```bash
 python3.12 -m venv .venv
@@ -36,14 +37,27 @@ python -m pytest
 | File | Checks |
 |---|---|
 | `tests/test_fixtures.py` | Customer fixtures byte-identical (sha256), catalogue = brief price table, Q01–Q14/E01–E10 present, product code does not read the expected answers |
-| `tests/test_reference_cases.py` | Q01, Q03 (HP-AC02), E01 (HP-AC04), independence of `pricing.py` (HP-AC01) |
+| `tests/test_reference_cases.py` | Independence of `pricing.py` (HP-AC01), Q01/Q03 (HP-AC02), all Q01–Q14 line values + totals (HP-AC03), all E01–E10 rejected in Python, no type coercion / SKU aggregation (HP-AC04) |
+| `tests/test_export.py` | JSON export = calculation = customer values for Q01–Q14, integer cents, rule version (HP-AC06) |
+| `tests/test_web.py` | Web UI: page with form, net notice and download; API returns the customer values; invalid E01–E10 come back as an error; displayed text = exported JSON (HP-AC05/06) |
 
 Test names follow `test_hp_acNN_*` so the Factory can map results to the HansePack acceptance criteria.
-Until the Factory run of Session 6 task 2, `quotation/pricing.py` is a stub and the Q01/Q03/E01 checks are expected to fail.
+Expected values come only from `fixtures/HansePack_Referenzfaelle.json`, never from the generating agent.
 
 ## Start
 
-The calculation module `quotation/pricing.py` is delivered by the Factory in Session 6 task 2. Planned reproducible call (same input format as the customer reference cases):
+Web UI (local, no Factory, no LLM, no database):
+
+```bash
+python -m quotation.web            # then open http://127.0.0.1:8000
+python -m quotation.web --port 8080
+```
+
+Enter 1–3 lines (article + quantity), click **Berechnen**, then **JSON herunterladen**. The page shows
+"Nettobeträge – Lehrprojekt, kein verbindliches Angebot". Every input is checked in the Python business logic;
+invalid input shows an error and no quotation. The table and the download come from the same JSON text.
+
+Command line (same input format as the customer reference cases):
 
 ```bash
 python -m quotation.pricing '{"items": [{"sku": "HP-BOX", "quantity": 50}]}'
@@ -53,7 +67,10 @@ python -m quotation.pricing '{"items": [{"sku": "HP-BOX", "quantity": 50}]}'
 
 | Path | Content | Maintained by |
 |---|---|---|
-| `quotation/` | Business logic (Python, stdlib only) | Factory agent (only write area) + human review |
+| `quotation/pricing.py` | Calculation + validation (HP-V1) | Factory agent + human review |
+| `quotation/export.py` | JSON export `quote_to_json` | Factory agent (S7 task 1) + human review |
+| `quotation/web.py` | Local web UI + `/api/quote` (stdlib `http.server`) | team (human-written) |
+| `quotation/catalog.py` | Loads the binding catalogue | team (human-written) |
 | `fixtures/` | Binding customer files, unchanged, with `SHA256SUMS` and [`SOURCE.md`](fixtures/SOURCE.md) | customer (read-only) |
 | `tests/` | Product checks against the customer values | team (not the generating agent) |
 
