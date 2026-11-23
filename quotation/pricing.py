@@ -74,7 +74,7 @@ def calculate_quote(items: list[dict[str, Any]], rule_version: str = "HP-V1") ->
         list_amount_cents = unit_price_cents * quantity
 
         # Apply discount based on quantity
-        if quantity <= 50:
+        if quantity <= 49:
             discount_percent =  0
         elif quantity <= 99:
             discount_percent = 5
